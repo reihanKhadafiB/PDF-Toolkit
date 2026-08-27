@@ -18,6 +18,22 @@ async def validate_pdf_file(file: UploadFile) -> None:
 
     await file.seek(0)
 
+async def validate_image_file(file: UploadFile) -> None:
+    valid_extensions = ('.png', '.jpg', '.jpeg')
+    if not file.filename.lower().endswith(valid_extensions):
+        raise HTTPException(status_code=400, detail=f"File {file.filename} bukan merupakan gambar (PNG/JPG).")
+
+    content = await file.read()
+    file_size = len(content)
+
+    if file_size > MAX_FILE_SIZE_BYTES:
+        raise HTTPException(status_code=400, detail=f"Ukuran file {file.filename} melebihi batas {MAX_FILE_SIZE_MB}MB.")
+
+    if file_size == 0:
+        raise HTTPException(status_code=400, detail=f"File {file.filename} kosong.")
+
+    await file.seek(0)
+
 def validate_pdf_encryption(file_path: str) -> None:
     try:
         reader = PdfReader(file_path)
