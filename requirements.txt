@@ -5,3 +5,4 @@ pypdf
 pdf2docx
 APScheduler
 PyMuPDF
+Pillow>=12.0.0
