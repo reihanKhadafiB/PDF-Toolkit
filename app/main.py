@@ -14,6 +14,7 @@ from app.api.merge import router as merge_router
 from app.api.convert import router as convert_router
 from app.api.compress import router as compress_router
 from app.api.scan import router as scan_router
+from app.api.split import router as split_router
 from app.core.file_manager import scheduled_cleanup
 
 warnings.filterwarnings('ignore', category=UserWarning, module='apscheduler')
@@ -49,6 +50,7 @@ app.include_router(merge_router, prefix="/api", tags=["merge"])
 app.include_router(convert_router, prefix="/api", tags=["convert"])
 app.include_router(compress_router, prefix="/api", tags=["compress"])
 app.include_router(scan_router, prefix="/api", tags=["scan"])
+app.include_router(split_router, prefix="/api", tags=["split"])
 
 static_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
