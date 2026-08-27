@@ -1,6 +1,6 @@
 # PDF Toolkit
 
-PDF Toolkit is a lightweight, fast, and secure local web application designed for processing PDF files. It allows you to seamlessly merge multiple PDFs into a single document or convert PDF files into editable Word (`.docx`) formats. 
+PDF Toolkit is a lightweight, fast, and secure local web application designed for processing PDF files. It allows you to seamlessly merge multiple PDFs, convert PDF files into editable Word (`.docx`) formats, compress heavy PDFs into tiny sizes, and convert images into a single PDF document. 
 
 Because all processing is handled locally on your own machine, your sensitive data never leaves your device, ensuring maximum privacy and security.
 
@@ -8,14 +8,16 @@ Because all processing is handled locally on your own machine, your sensitive da
 
 - **Merge PDF**: Combine multiple PDF files into one. Supports drag-and-drop file reordering before merging.
 - **PDF to Word**: Convert PDF documents to Word (`.docx`) format with high accuracy.
-- **Privacy First**: 100% local processing. No cloud uploads, no data collection.
+- **Compress PDF**: Dramatically reduce PDF file sizes (targeting <1MB) using deep Ghostscript optimization.
+- **Image to PDF**: Select and reorder multiple images (JPG/PNG) to instantly create a single PDF document.
+- **Security & Privacy First**: 100% local processing. Includes hardened security (Path Traversal prevention, secure file naming, strict CORS & HTTP headers) and ensures no processed data is leaked to Git via strict `.gitignore` configurations.
 - **Modern UI**: Clean, professional, and responsive user interface with smooth animations and intuitive UX.
 - **Fast Processing**: Powered by FastAPI, ensuring quick response times and efficient file handling in the background.
 
 ## Tech Stack
 
 - **Backend**: Python 3, FastAPI, Uvicorn
-- **PDF Processing**: `pdf2docx`, `PyPDF2` (or equivalent for merging)
+- **PDF Processing**: `pdf2docx`, `pypdf`, `PyMuPDF`, `Ghostscript`
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
 
 ## Prerequisites
@@ -23,6 +25,7 @@ Because all processing is handled locally on your own machine, your sensitive da
 Before you begin, ensure you have the following installed on your local machine:
 - **Python 3.8+**
 - **pip** (Python package installer)
+- **Ghostscript (gs)**: Required for maximum PDF compression. Ensure `gs` is installed and accessible in your system's PATH.
 
 ## Installation & Setup
 
