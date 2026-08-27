@@ -1,24 +1,31 @@
 # PDF Toolkit
 
-PDF Toolkit is a lightweight, fast, and secure local web application designed for processing PDF files. It allows you to seamlessly merge multiple PDFs, convert PDF files into editable Word (`.docx`) formats, compress heavy PDFs into tiny sizes, and convert images into a single PDF document. 
+PDF Toolkit is a lightweight, fast, and secure local web application designed for processing PDF files. It allows you to seamlessly merge, split, compress, and convert your PDFs, as well as scan documents with high-quality enhancement features.
 
 Because all processing is handled locally on your own machine, your sensitive data never leaves your device, ensuring maximum privacy and security.
 
 ## Features
 
 - **Merge PDF**: Combine multiple PDF files into one. Supports drag-and-drop file reordering before merging.
-- **PDF to Word**: Convert PDF documents to Word (`.docx`) format with high accuracy.
+- **Split PDF**: Visually extract specific pages from a PDF. See a preview of all pages and click to select the ones you want to keep.
 - **Compress PDF**: Dramatically reduce PDF file sizes (targeting <1MB) using deep Ghostscript optimization.
-- **Image to PDF**: Select and reorder multiple images (JPG/PNG) to instantly create a single PDF document.
-- **Security & Privacy First**: 100% local processing. Includes hardened security (Path Traversal prevention, secure file naming, strict CORS & HTTP headers) and ensures no processed data is leaked to Git via strict `.gitignore` configurations.
+- **PDF to Word**: Convert PDF documents to Word (`.docx`) format with high accuracy.
+- **Document Scanner**: Scan physical documents with CamScanner-like quality. 
+  - **Auto-Detect Borders**: Automatically detects document edges using OpenCV.js (Canny edge detection & contours).
+  - **Adaptive Filters**: Apply intelligent filters (Magic Color, B&W, Grayscale, Lighten) to enhance text readability, remove shadows, and eliminate edge vignetting.
+  - **Backend Sharpening**: Further enhances image sharpness using Pillow's Unsharp Mask before saving to PDF.
+- **Image to PDF**: Easily convert standard images (JPG/PNG) into a single PDF document.
+- **100% Offline & Secure**: Complete local processing. No internet connection is required after installation.
+  - All fonts, JS libraries, and CSS are bundled locally (No CDNs).
+  - Hardened security features (Path Traversal prevention, strict CORS, HTTP headers).
+  - Strict `.gitignore` prevents sensitive data leaks to GitHub.
 - **Modern UI**: Clean, professional, and responsive user interface with smooth animations and intuitive UX.
-- **Fast Processing**: Powered by FastAPI, ensuring quick response times and efficient file handling in the background.
 
 ## Tech Stack
 
-- **Backend**: Python 3, FastAPI, Uvicorn
-- **PDF Processing**: `pdf2docx`, `pypdf`, `PyMuPDF`, `Ghostscript`
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Backend**: Python 3.8+, FastAPI, Uvicorn
+- **PDF & Image Processing**: `pdf2docx`, `pypdf`, `PyMuPDF` (fitz), `Pillow` (PIL), `Ghostscript`
+- **Frontend (Fully Bundled)**: HTML5, CSS3, Vanilla JavaScript, `PDF.js` (for visual splitting), `Cropper.js` (for manual cropping), `OpenCV.js` (for document auto-detection), local Inter Fonts.
 
 ## Prerequisites
 
