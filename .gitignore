@@ -10,7 +10,7 @@ __pycache__/
 *$py.class
 
 # Temporary / Output files
-temp/
+# Note: temp/ directory contents are ignored via temp/.gitignore to preserve the folder structure
 *.pdf
 *.docx
 
