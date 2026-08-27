@@ -5,8 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Toolkit</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="fonts.css">
     <link rel="stylesheet" href="style.css?v=2">
+    <!-- Cropper.js for Document Scanner (Local) -->
+    <link rel="stylesheet" href="vendors/cropperjs/cropper.min.css">
+    <script src="vendors/cropperjs/cropper.min.js"></script>
+    
+    <!-- PDF.js for Visual Splitter (Local) -->
+    <script src="vendors/pdfjs/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendors/pdfjs/pdf.worker.min.js';
+    </script>
+    <!-- OpenCV.js for Document Auto-Detection (Local) -->
+    <script async src="vendors/opencv/opencv.js" onload="window.openCvReady=true"></script>
 </head>
 
 <body>
@@ -64,17 +75,33 @@
                     </button>
                     <button class="segment-btn nav-btn" data-target="compress-section">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M15 15l6 6m-6-6v4m0-4h4M9 15l-6 6m6-6v4m0-4H5M15 9l6-6m-6 6V5m0 4h4M9 9L3 3m6 6V5m0 4H5"/>
+                            <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+                            <path d="M12 12v9" />
+                            <path d="M8 17l4-4 4 4" />
                         </svg>
                         Compress PDF
                     </button>
-                    <button class="segment-btn nav-btn" data-target="scan-section">
+                    <button class="segment-btn nav-btn" data-target="image-section">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                             <circle cx="8.5" cy="8.5" r="1.5"/>
                             <polyline points="21 15 16 10 5 21"/>
                         </svg>
                         Image to PDF
+                    </button>
+                    <button class="segment-btn nav-btn" data-target="scan-section">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        Scanner
+                    </button>
+                    <button class="segment-btn nav-btn" data-target="split-section">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M3 12h18M3 18h18" stroke-dasharray="4 4" />
+                            <path d="M8 3L8 21M16 3L16 21" />
+                        </svg>
+                        Split PDF
                     </button>
                 </div>
 
@@ -191,9 +218,9 @@
                 </section>
 
                 <!-- Image to PDF Section -->
-                <section id="scan-section" class="tab-content">
-                    <div class="upload-area" id="scan-upload-area">
-                        <input type="file" id="scan-file-input" multiple accept="image/png, image/jpeg" class="hidden">
+                <section id="image-section" class="tab-content">
+                    <div class="upload-area" id="image-upload-area">
+                        <input type="file" id="image-file-input" accept="image/jpeg,image/png" multiple class="hidden">
                         <div class="upload-icon-wrapper">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="upload-icon">
                                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -201,8 +228,43 @@
                                 <polyline points="21 15 16 10 5 21"/>
                             </svg>
                         </div>
-                        <h3>Pilih atau jatuhkan file gambar</h3>
-                        <p class="upload-hint">Pilih beberapa foto/gambar (JPG/PNG) untuk disatukan menjadi PDF.</p>
+                        <h3>Pilih gambar biasa untuk dijadikan PDF</h3>
+                        <p class="upload-hint">Upload gambar (JPG/PNG), atur urutannya, lalu gabungkan.</p>
+                    </div>
+
+                    <div class="file-list-container">
+                        <ul id="image-file-list" class="sortable-list">
+                        </ul>
+                    </div>
+
+                    <div class="action-bar hidden" id="image-action-bar">
+                        <div class="filename-input-wrapper">
+                            <label for="image-filename-input" class="input-label">Nama File PDF</label>
+                            <div class="input-group">
+                                <input type="text" id="image-filename-input" class="custom-filename-input" placeholder="contoh: album_foto">
+                                <span class="file-extension">.pdf</span>
+                            </div>
+                        </div>
+                        <button class="primary-btn" id="image-btn">
+                            <span class="btn-text">Jadikan PDF</span>
+                            <span class="loader hidden"></span>
+                        </button>
+                        <p class="error-msg" id="image-error"></p>
+                    </div>
+                </section>
+
+                <!-- Document Scanner Section -->
+                <section id="scan-section" class="tab-content">
+                    <div class="upload-area" id="scan-upload-area">
+                        <input type="file" id="scan-file-input" multiple accept="image/png, image/jpeg" class="hidden">
+                        <div class="upload-icon-wrapper">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="upload-icon">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </div>
+                        <h3>Scan Foto Dokumen (CamScanner)</h3>
+                        <p class="upload-hint">Upload foto kamera (kuitansi/dokumen), crop, lalu beri filter B&W.</p>
                     </div>
 
                     <div class="file-list-container">
@@ -212,9 +274,9 @@
 
                     <div class="action-bar hidden" id="scan-action-bar">
                         <div class="filename-input-wrapper">
-                            <label for="scan-filename-input" class="input-label">Nama File PDF</label>
+                            <label for="scan-filename-input" class="input-label">Nama File Scan</label>
                             <div class="input-group">
-                                <input type="text" id="scan-filename-input" class="custom-filename-input" placeholder="contoh: berkas_scan">
+                                <input type="text" id="scan-filename-input" class="custom-filename-input" placeholder="contoh: hasil_scan">
                                 <span class="file-extension">.pdf</span>
                             </div>
                         </div>
@@ -223,6 +285,101 @@
                             <span class="loader hidden"></span>
                         </button>
                         <p class="error-msg" id="scan-error"></p>
+                    </div>
+                </section>
+
+                <!-- Document Scanner Editor Modal -->
+                <div id="scanner-modal" class="modal hidden">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <div>
+                                <h3>Editor Scanner</h3>
+                                <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: var(--text-secondary);">Geser sudut kotak biru untuk memotong (crop) dokumen. Gunakan filter di bawah agar teks lebih tajam.</p>
+                            </div>
+                            <button class="close-modal-btn" id="close-scanner-modal">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="cropper-container">
+                                <img id="scanner-image-preview" src="" alt="Preview">
+                            </div>
+                            <div class="filter-controls">
+                                <h4 style="margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">Pilih Efek Filter:</h4>
+                                <div class="filter-buttons">
+                                    <button class="filter-btn active" data-filter="none">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                                        Original
+                                    </button>
+                                    <button class="filter-btn" data-filter="lighten">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                                        Lighten
+                                    </button>
+                                    <button class="filter-btn" data-filter="magic">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 21l-4.35-4.35"/><path d="M12.18 16.65A6.5 6.5 0 1 0 5.68 10a6.5 6.5 0 0 0 6.5 6.65z"/><path d="M13.5 8l-3 3-1.5-1.5"/></svg>
+                                        Magic Color
+                                    </button>
+                                    <button class="filter-btn" data-filter="grayscale">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+                                        Grayscale
+                                    </button>
+                                    <button class="filter-btn" data-filter="bw">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                                        B&W
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="secondary-btn" id="cancel-scan-edit">Batal</button>
+                            <button class="primary-btn" id="save-scan-edit">
+                                <span class="btn-text">Simpan Perubahan</span>
+                                <span class="loader hidden"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Split PDF Section -->
+                <section id="split-section" class="tab-content">
+                    <div class="upload-area" id="split-upload-area">
+                        <input type="file" id="split-file-input" accept="application/pdf" class="hidden">
+                        <div class="upload-icon-wrapper">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="upload-icon">
+                                <path d="M3 6h18M3 12h18M3 18h18" stroke-dasharray="4 4" />
+                                <path d="M8 3L8 21M16 3L16 21" />
+                            </svg>
+                        </div>
+                        <h3>Pilih dokumen PDF yang ingin dipotong</h3>
+                        <p class="upload-hint">Upload 1 file PDF, lalu pilih halaman mana saja yang ingin diambil.</p>
+                    </div>
+
+                    <div id="split-editor-container" class="hidden">
+                        <div class="editor-header">
+                            <h4>Pilih Halaman</h4>
+                            <div class="selection-actions">
+                                <button class="secondary-btn" id="split-select-all">Pilih Semua</button>
+                                <button class="secondary-btn" id="split-deselect-all">Batalkan Pilihan</button>
+                            </div>
+                        </div>
+                        <div class="pages-grid" id="split-pages-grid">
+                            <!-- Thumbnails will be rendered here -->
+                        </div>
+                    </div>
+
+                    <div class="action-bar hidden" id="split-action-bar">
+                        <div class="filename-input-wrapper">
+                            <label for="split-filename-input" class="input-label">Nama File Potongan</label>
+                            <div class="input-group">
+                                <input type="text" id="split-filename-input" class="custom-filename-input" placeholder="contoh: file_potongan">
+                                <span class="file-extension">.pdf</span>
+                            </div>
+                        </div>
+                        <button class="primary-btn" id="split-btn" disabled>
+                            <span class="btn-text">Pisahkan PDF (<span id="split-selected-count">0</span> Hal)</span>
+                            <span class="loader hidden"></span>
+                        </button>
+                        <p class="error-msg" id="split-error"></p>
                     </div>
                 </section>
             </div>
