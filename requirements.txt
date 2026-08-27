@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+python-multipart
+pypdf
+pdf2docx
+APScheduler

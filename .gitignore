@@ -1,0 +1,22 @@
+# Environments
+venv/
+env/
+.env
+.venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary / Output files
+temp/
+*.pdf
+*.docx
+
+# IDE / OS specific
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
