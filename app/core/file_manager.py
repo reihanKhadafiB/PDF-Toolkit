@@ -1,12 +1,24 @@
 import os
+import re
 import shutil
 import time
 from fastapi import UploadFile
 from typing import List
 from app.config import TEMP_DIR, CLEANUP_MAX_AGE_HOURS
 
+def secure_filename(filename: str) -> str:
+    if not filename:
+        return "unnamed_file"
+    filename = re.sub(r'[^a-zA-Z0-9.\-_]', '_', filename)
+    filename = os.path.basename(filename)
+    filename = filename.lstrip(".-")
+    if not filename:
+        return "unnamed_file"
+    return filename
+
 async def save_upload_file(upload_file: UploadFile, filename: str) -> str:
-    file_path = os.path.join(TEMP_DIR, filename)
+    safe_filename = secure_filename(filename)
+    file_path = os.path.join(TEMP_DIR, safe_filename)
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(upload_file.file, buffer)
     return file_path
