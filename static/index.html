@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Toolkit</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 
 <body>
@@ -61,6 +61,20 @@
                             <line x1="12" y1="2" x2="12" y2="15" />
                         </svg>
                         PDF to Word
+                    </button>
+                    <button class="segment-btn nav-btn" data-target="compress-section">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 15l6 6m-6-6v4m0-4h4M9 15l-6 6m6-6v4m0-4H5M15 9l6-6m-6 6V5m0 4h4M9 9L3 3m6 6V5m0 4H5"/>
+                        </svg>
+                        Compress PDF
+                    </button>
+                    <button class="segment-btn nav-btn" data-target="scan-section">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                            <circle cx="8.5" cy="8.5" r="1.5"/>
+                            <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                        Image to PDF
                     </button>
                 </div>
 
@@ -141,6 +155,76 @@
                         <p class="error-msg" id="convert-error"></p>
                     </div>
                 </section>
+
+                <!-- Compress PDF Section -->
+                <section id="compress-section" class="tab-content">
+                    <div class="upload-area" id="compress-upload-area">
+                        <input type="file" id="compress-file-input" accept=".pdf" class="hidden">
+                        <div class="upload-icon-wrapper">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="upload-icon">
+                                <path d="M15 15l6 6m-6-6v4m0-4h4M9 15l-6 6m6-6v4m0-4H5M15 9l6-6m-6 6V5m0 4h4M9 9L3 3m6 6V5m0 4H5"/>
+                            </svg>
+                        </div>
+                        <h3>Pilih atau jatuhkan file PDF</h3>
+                        <p class="upload-hint">Pilih satu file PDF untuk dikompresi. Maks 10MB.</p>
+                    </div>
+
+                    <div class="file-list-container">
+                        <ul id="compress-file-list">
+                        </ul>
+                    </div>
+
+                    <div class="action-bar hidden" id="compress-action-bar">
+                        <div class="filename-input-wrapper">
+                            <label for="compress-filename-input" class="input-label">Nama File Hasil Kompresi</label>
+                            <div class="input-group">
+                                <input type="text" id="compress-filename-input" class="custom-filename-input" placeholder="contoh: berkas_lamaran">
+                                <span class="file-extension">.pdf</span>
+                            </div>
+                        </div>
+                        <button class="primary-btn" id="compress-btn">
+                            <span class="btn-text">Mulai Kompresi</span>
+                            <span class="loader hidden"></span>
+                        </button>
+                        <p class="error-msg" id="compress-error"></p>
+                    </div>
+                </section>
+
+                <!-- Image to PDF Section -->
+                <section id="scan-section" class="tab-content">
+                    <div class="upload-area" id="scan-upload-area">
+                        <input type="file" id="scan-file-input" multiple accept="image/png, image/jpeg" class="hidden">
+                        <div class="upload-icon-wrapper">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="upload-icon">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                        </div>
+                        <h3>Pilih atau jatuhkan file gambar</h3>
+                        <p class="upload-hint">Pilih beberapa foto/gambar (JPG/PNG) untuk disatukan menjadi PDF.</p>
+                    </div>
+
+                    <div class="file-list-container">
+                        <ul id="scan-file-list" class="sortable-list">
+                        </ul>
+                    </div>
+
+                    <div class="action-bar hidden" id="scan-action-bar">
+                        <div class="filename-input-wrapper">
+                            <label for="scan-filename-input" class="input-label">Nama File PDF</label>
+                            <div class="input-group">
+                                <input type="text" id="scan-filename-input" class="custom-filename-input" placeholder="contoh: berkas_scan">
+                                <span class="file-extension">.pdf</span>
+                            </div>
+                        </div>
+                        <button class="primary-btn" id="scan-btn">
+                            <span class="btn-text">Buat PDF</span>
+                            <span class="loader hidden"></span>
+                        </button>
+                        <p class="error-msg" id="scan-error"></p>
+                    </div>
+                </section>
             </div>
         </main>
 
@@ -153,7 +237,7 @@
         <span id="toast-msg"></span>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=2"></script>
 </body>
 
 </html>
