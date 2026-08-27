@@ -113,6 +113,12 @@ body {
     border-radius: var(--radius-lg);
     margin-bottom: 2rem;
     border: 1px solid var(--border-color);
+    overflow-x: auto; /* Allow horizontal scroll if too many tabs */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+
+.segmented-control::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome/Safari */
 }
 
 .segment-btn {
@@ -131,6 +137,7 @@ body {
     border-radius: calc(var(--radius-lg) - 0.25rem);
     cursor: pointer;
     transition: all 0.2s ease;
+    white-space: nowrap; /* Mencegah teks terpotong atas-bawah */
 }
 
 .segment-btn:hover {
@@ -465,4 +472,258 @@ ul {
     padding: 2rem;
     color: var(--text-muted);
     font-size: 0.875rem;
+}
+
+/* Split PDF Editor */
+#split-editor-container {
+    margin-top: 1.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.editor-header h4 {
+    margin: 0;
+    font-size: 1.125rem;
+}
+
+.selection-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.secondary-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    background-color: var(--bg-hover);
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.secondary-btn:hover {
+    background-color: var(--border-color);
+}
+
+.pages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.page-thumbnail-wrapper {
+    position: relative;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--bg-hover); /* so we can see the edges of white pages clearly */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    
+    /* Center canvas vertically and horizontally if the grid cell is taller/wider */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 160px; /* give it a base height so empty space looks consistent */
+}
+
+.page-thumbnail-wrapper canvas {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.page-thumbnail-wrapper.selected {
+    box-shadow: 0 0 0 4px var(--primary-color);
+    transform: translateY(-4px);
+}
+
+.page-thumbnail-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(79, 70, 229, 0.15);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.page-thumbnail-wrapper.selected::after {
+    opacity: 1;
+}
+
+.page-thumbnail-wrapper .page-number {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.35rem;
+    z-index: 3;
+}
+
+.page-thumbnail-wrapper .check-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 2;
+}
+
+.page-thumbnail-wrapper .check-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.page-thumbnail-wrapper.selected .check-icon {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Scanner Editor Modal */
+.modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+.modal.hidden {
+    display: none;
+}
+.modal-content {
+    background: var(--bg-card);
+    width: 100%;
+    max-width: 900px;
+    height: 90vh;
+    border-radius: var(--radius-xl);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.modal-header h3 {
+    margin: 0;
+}
+.close-modal-btn {
+    background: none; border: none; cursor: pointer; color: var(--text-secondary);
+}
+.modal-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    overflow: hidden;
+    gap: 1rem;
+}
+.cropper-container {
+    flex: 1;
+    background: #e9ecef;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    min-height: 0;
+}
+.cropper-container img {
+    display: block;
+    max-width: 100%;
+}
+.filter-controls {
+    padding: 1rem;
+    background: var(--bg-page);
+    border-radius: 0.5rem;
+}
+.filter-controls h4 { margin-top: 0; margin-bottom: 0.75rem; }
+.filter-buttons {
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+}
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    border-radius: 0.35rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+}
+.filter-btn.active {
+    background: var(--brand);
+    color: white;
+    border-color: var(--brand);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+.file-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+.edit-btn {
+    background: var(--brand);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 0.35rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    opacity: 0.9;
+    transition: opacity 0.2s, transform 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.edit-btn:hover {
+    opacity: 1;
+    transform: scale(1.04);
 }
