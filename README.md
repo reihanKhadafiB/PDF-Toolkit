@@ -4,7 +4,7 @@ PDF Toolkit is a lightweight, fast, and secure local web application designed fo
 
 Because all processing is handled locally on your own machine, your sensitive data never leaves your device, ensuring maximum privacy and security.
 
-## ✨ Features
+## Features
 
 - **Merge PDF**: Combine multiple PDF files into one. Supports drag-and-drop file reordering before merging.
 - **PDF to Word**: Convert PDF documents to Word (`.docx`) format with high accuracy.
@@ -12,32 +12,31 @@ Because all processing is handled locally on your own machine, your sensitive da
 - **Modern UI**: Clean, professional, and responsive user interface with smooth animations and intuitive UX.
 - **Fast Processing**: Powered by FastAPI, ensuring quick response times and efficient file handling in the background.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Backend**: Python 3, FastAPI, Uvicorn
 - **PDF Processing**: `pdf2docx`, `PyPDF2` (or equivalent for merging)
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed on your local machine:
 - **Python 3.8+**
 - **pip** (Python package installer)
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 To get this project running on your local machine, follow these step-by-step instructions:
 
 1. **Clone the repository**:
    Open your terminal and run the following command to download the project:
    ```bash
-   git clone https://github.com/username-anda/nama-repo-anda.git
+   git clone https://github.com/reihanKhadafiB/PDF-Toolkit.git
    ```
-   *(Note: Replace `username-anda/nama-repo-anda` with the actual repository URL)*
 
 2. **Navigate to the project directory**:
    ```bash
-   cd nama-repo-anda
+   cd PDF-Toolkit
    ```
 
 3. **Create and activate a virtual environment** (Highly Recommended):
@@ -61,7 +60,7 @@ To get this project running on your local machine, follow these step-by-step ins
    pip install -r requirements.txt
    ```
 
-## 💻 Usage
+## Usage
 
 Once you have installed everything, you can start the application using one of the following methods:
 
@@ -88,7 +87,7 @@ Open your favorite web browser and navigate to:
 http://localhost:8000
 ```
 
-## 👨‍💻 Author
+## Author
 
 - **reihanKhadafiB**
 
