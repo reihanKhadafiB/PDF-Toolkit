@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const escapeHTML = (value) => String(value).replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[char]);
     const tabBtns = document.querySelectorAll('.nav-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     tabBtns.forEach(btn => {
@@ -9,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById(btn.dataset.target).classList.add('active');
         });
     });
-    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
     let mergeFiles = [];
     let convertFile = null;
     const mergeUploadArea = document.getElementById('merge-upload-area');
@@ -43,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 continue;
             }
             if (file.size > MAX_FILE_SIZE) {
-                showToast(`File ${file.name} melebihi 5MB.`);
+                showToast(`File ${file.name} melebihi 10MB.`);
                 continue;
             }
             if (!mergeFiles.some(f => f.name === file.name)) {
@@ -72,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="file-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                     </span>
-                    <span class="file-name" title="${file.name}">${file.name}</span>
+                    <span class="file-name" title="${escapeHTML(file.name)}">${escapeHTML(file.name)}</span>
                 </div>
                 <button class="remove-btn" onclick="removeMergeFile(${index})" title="Hapus file">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -201,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         if (file.size > MAX_FILE_SIZE) {
-            showToast(`File ${file.name} melebihi 5MB.`);
+            showToast(`File ${file.name} melebihi 10MB.`);
             return;
         }
         convertFile = file;
@@ -218,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="file-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                     </span>
-                    <span class="file-name" title="${convertFile.name}">${convertFile.name}</span>
+                    <span class="file-name" title="${escapeHTML(convertFile.name)}">${escapeHTML(convertFile.name)}</span>
                 </div>
                 <button class="remove-btn" onclick="removeConvertFile()" title="Hapus file">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -328,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="file-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                     </span>
-                    <span class="file-name" title="${compressFile.name}">${compressFile.name}</span>
+                    <span class="file-name" title="${escapeHTML(compressFile.name)}">${escapeHTML(compressFile.name)}</span>
                 </div>
                 <button class="remove-btn" onclick="removeCompressFile()" title="Hapus file">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -381,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setLoading(compressBtn, false);
         }
     });
-    // Image to PDF Logic
+
     const imageUploadArea = document.getElementById('image-upload-area');
     const imageFileInput = document.getElementById('image-file-input');
     const imageFileList = document.getElementById('image-file-list');
@@ -448,7 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="file-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                         </span>
-                        <span class="file-name" title="${file.name}">${file.name}</span>
+                        <span class="file-name" title="${escapeHTML(file.name)}">${escapeHTML(file.name)}</span>
                     </div>
                     <button class="remove-btn" onclick="removeImageFile(${index})" title="Hapus file">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -543,7 +546,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Scan Logic
     const scanUploadArea = document.getElementById('scan-upload-area');
     const scanFileInput = document.getElementById('scan-file-input');
     const scanFileList = document.getElementById('scan-file-list');
@@ -610,7 +612,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="file-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                         </span>
-                        <span class="file-name" title="${file.name}">${file.name}</span>
+                        <span class="file-name" title="${escapeHTML(file.name)}">${escapeHTML(file.name)}</span>
                     </div>
                     <div class="file-actions">
                         <button class="edit-btn" onclick="openScannerEditor(${index})" title="Edit Gambar Crop & Filter">
@@ -663,7 +665,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderScanList();
     }
 
-    // Scanner Editor Logic
     const scannerModal = document.getElementById('scanner-modal');
     const closeScannerModal = document.getElementById('close-scanner-modal');
     const cancelScanEdit = document.getElementById('cancel-scan-edit');
@@ -683,13 +684,11 @@ document.addEventListener('DOMContentLoaded', () => {
             scannerPreview.src = e.target.result;
             scannerModal.classList.remove('hidden');
 
-            // Reset filters
             filterBtns.forEach(b => b.classList.remove('active'));
             document.querySelector('.filter-btn[data-filter="none"]').classList.add('active');
             currentFilter = 'none';
             document.querySelector('.cropper-container').style.filter = 'none';
 
-            // Init Cropper
             if (cropper) {
                 cropper.destroy();
             }
@@ -700,7 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 zoomable: true,
                 responsive: true,
                 ready() {
-                    // Setelah cropper siap, deteksi batas dokumen secara otomatis
+
                     autoDetectDocument(this.cropper);
                 }
             });
@@ -745,14 +744,10 @@ document.addEventListener('DOMContentLoaded', () => {
             contours = new cv.MatVector();
             hierarchy = new cv.Mat();
 
-            // 1. Grayscale
             cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
 
-            // 2. Blur besar (9x9) → menghilangkan detail internal (teks, foto KTP, dll)
-            //    hanya menyisakan tepi besar = tepi dokumen itu sendiri
             cv.GaussianBlur(gray, blurred, new cv.Size(9, 9), 0);
 
-            // 3. Auto-Canny: threshold berbasis median → adaptif terhadap kondisi cahaya
             const pixData = tmpCtx.getImageData(0, 0, sW, sH).data;
             const lums = [];
             for (let i = 0; i < pixData.length; i += 4) {
@@ -764,17 +759,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const cannyHigh = Math.min(255, 1.6 * median);
             cv.Canny(blurred, edges, cannyLow, cannyHigh);
 
-            // 4. Dilate lebih besar (7x7) agar tepi yang putus-putus menyambung
             const kernel = cv.Mat.ones(7, 7, cv.CV_8U);
             cv.dilate(edges, edges, kernel);
             kernel.delete();
 
-            // 5. Cari semua kontur (RETR_LIST termasuk nested, RETR_EXTERNAL lebih strict)
             cv.findContours(edges, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
 
-            const minArea = sW * sH * 0.05; // minimal 5% area layar
+            const minArea = sW * sH * 0.05;
 
-            // 6. Cari quadrilateral (4 sisi) TERBESAR dengan convexity check
             let bestQuad = null;
             let bestQuadArea = 0;
 
@@ -797,7 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (bestQuad) bestQuad.delete();
                         bestQuad = approx;
                         foundQuad = true;
-                        break; // Sudah dapat 4-sisi, tidak perlu epsilon yang lebih besar
+                        break;
                     } else {
                         approx.delete();
                     }
@@ -808,11 +800,11 @@ document.addEventListener('DOMContentLoaded', () => {
             let boundRect = null;
 
             if (bestQuad) {
-                // Gunakan bounding rect dari quadrilateral terbaik
+
                 boundRect = cv.boundingRect(bestQuad);
                 bestQuad.delete();
             } else {
-                // Fallback: cari kontur terbesar (bisa 3-8 sisi) dan ambil bounding rect-nya
+
                 let largestArea = 0;
                 let largestCnt = null;
                 for (let i = 0; i < contours.size(); i++) {
@@ -833,7 +825,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (boundRect) {
-                // Scale balik ke koordinat gambar asli + sedikit padding
+
                 const padding = Math.round(8 / scaleDown);
                 const docLeft = Math.max(0, Math.round(boundRect.x / scaleDown) - padding);
                 const docTop = Math.max(0, Math.round(boundRect.y / scaleDown) - padding);
@@ -886,7 +878,6 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
             currentFilter = btn.dataset.filter;
 
-            // Apply CSS filter for preview (nilai harus sama dengan filterMap di save)
             const filterMap = {
                 'none': 'none',
                 'lighten': 'brightness(1.4) contrast(2.2)',
@@ -916,9 +907,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 finalCanvas.height = croppedCanvas.height;
                 const ctx = finalCanvas.getContext('2d');
 
-                // Gunakan filter CSS yang sama dengan preview
-                // brightness tinggi → angkat shadow/vignette di pojok
-                // contrast tinggi → "bakar" midtone jadi putih, teks jadi hitam legam
                 const filterMap = {
                     'none': 'none',
                     'lighten': 'brightness(1.4) contrast(2.2)',
@@ -945,7 +933,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 50);
     });
-
 
     window.removeScanFile = (index) => {
         scanFiles.splice(index, 1);
@@ -1055,7 +1042,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             for (let i = 1; i <= totalPdfPages; i++) {
                 const page = await pdf.getPage(i);
-                // Use a higher scale for much clearer resolution on the canvas
+
                 const viewport = page.getViewport({ scale: 1.5 });
 
                 const wrapper = document.createElement('div');
