@@ -1,105 +1,96 @@
 # PDF Toolkit
 
-PDF Toolkit is a lightweight, fast, and secure local web application designed for processing PDF files. It allows you to seamlessly merge, split, compress, and convert your PDFs, as well as scan documents with high-quality enhancement features.
-
-Because all processing is handled locally on your own machine, your sensitive data never leaves your device, ensuring maximum privacy and security.
+A local web app for common PDF and document-scanning tasks. Files are processed by the backend running on your machine; the frontend libraries are bundled with the project.
 
 ## Features
 
-- **Merge PDF**: Combine multiple PDF files into one. Supports drag-and-drop file reordering before merging.
-- **Split PDF**: Visually extract specific pages from a PDF. See a preview of all pages and click to select the ones you want to keep.
-- **Compress PDF**: Dramatically reduce PDF file sizes (targeting <1MB) using deep Ghostscript optimization.
-- **PDF to Word**: Convert PDF documents to Word (`.docx`) format with high accuracy.
-- **Document Scanner**: Scan physical documents with CamScanner-like quality. 
-  - **Auto-Detect Borders**: Automatically detects document edges using OpenCV.js (Canny edge detection & contours).
-  - **Adaptive Filters**: Apply intelligent filters (Magic Color, B&W, Grayscale, Lighten) to enhance text readability, remove shadows, and eliminate edge vignetting.
-  - **Backend Sharpening**: Further enhances image sharpness using Pillow's Unsharp Mask before saving to PDF.
-- **Image to PDF**: Easily convert standard images (JPG/PNG) into a single PDF document.
-- **100% Offline & Secure**: Complete local processing. No internet connection is required after installation.
-  - All fonts, JS libraries, and CSS are bundled locally (No CDNs).
-  - Hardened security features (Path Traversal prevention, strict CORS, HTTP headers).
-  - Strict `.gitignore` prevents sensitive data leaks to GitHub.
-- **Modern UI**: Clean, professional, and responsive user interface with smooth animations and intuitive UX.
+- **Merge PDFs** — combine files and reorder them before processing.
+- **Split PDFs** — preview pages, select the pages to keep, and download the result.
+- **Compress PDFs** — use Ghostscript when available, with a PyMuPDF fallback.
+- **PDF to Word** — convert PDF documents to DOCX.
+- **Images to PDF** — combine PNG or JPEG images into a PDF.
+- **Document scan** — crop and enhance images in the browser, then save them as a PDF.
 
-## Tech Stack
+## Requirements
 
-- **Backend**: Python 3.8+, FastAPI, Uvicorn
-- **PDF & Image Processing**: `pdf2docx`, `pypdf`, `PyMuPDF` (fitz), `Pillow` (PIL), `Ghostscript`
-- **Frontend (Fully Bundled)**: HTML5, CSS3, Vanilla JavaScript, `PDF.js` (for visual splitting), `Cropper.js` (for manual cropping), `OpenCV.js` (for document auto-detection), local Inter Fonts.
+- Python 3.10 or later
+- `pip`
+- Ghostscript is optional and recommended for PDF compression. Without it, compression uses the PyMuPDF fallback.
 
-## Prerequisites
+## Quick start
 
-Before you begin, ensure you have the following installed on your local machine:
-- **Python 3.8+**
-- **pip** (Python package installer)
-- **Ghostscript (gs)**: Required for maximum PDF compression. Ensure `gs` is installed and accessible in your system's PATH.
-
-## Installation & Setup
-
-To get this project running on your local machine, follow these step-by-step instructions:
-
-1. **Clone the repository**:
-   Open your terminal and run the following command to download the project:
-   ```bash
-   git clone https://github.com/reihanKhadafiB/PDF-Toolkit.git
-   ```
-
-2. **Navigate to the project directory**:
-   ```bash
-   cd PDF-Toolkit
-   ```
-
-3. **Create and activate a virtual environment** (Highly Recommended):
-   This ensures that the project's dependencies don't interfere with your system-wide Python packages.
-   ```bash
-   # Create the virtual environment
-   python3 -m venv venv
-
-   # Activate on Linux/macOS:
-   source venv/bin/activate
-   
-   # Activate on Windows (Command Prompt):
-   venv\Scripts\activate
-   
-   # Activate on Windows (PowerShell):
-   .\venv\Scripts\Activate.ps1
-   ```
-
-4. **Install the required dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Usage
-
-Once you have installed everything, you can start the application using one of the following methods:
-
-### Option 1: Using the bash script (Linux/macOS only)
-We have provided a convenience script to start the server:
 ```bash
-# Make the script executable (only needed once)
-chmod +x run.sh
-
-# Run the script
-./run.sh
+git clone https://github.com/reihanKhadafiB/PDF-Toolkit.git
+cd PDF-Toolkit
+python -m venv .venv
 ```
 
-### Option 2: Manual Execution (Any OS)
-If you are on Windows or prefer to run the server manually, ensure your virtual environment is active and run:
+Activate the virtual environment:
+
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+# Linux / macOS
+source .venv/bin/activate
+
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
+
+# Windows Command Prompt
+.venv\Scripts\activate.bat
 ```
 
-### Accessing the Web Interface
-Once the server is up and running, you will see a message indicating it's listening on port 8000. 
-Open your favorite web browser and navigate to:
+Install dependencies and start the app:
+
+```bash
+pip install -r requirements.txt
+uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
-http://localhost:8000
+
+Open [http://localhost:8000](http://localhost:8000) in your browser. To stop the server, press `Ctrl+C` in the terminal.
+
+On Linux or macOS, you can also start the app with `./run.sh` after creating the `.venv` directory as shown above.
+
+## Upload limits
+
+- Maximum file size: **10 MB per file**
+- Maximum request size: **50 MB total**
+- Maximum files in a multi-file request: **20**
+- Maximum image dimensions: **40 megapixels per image**
+
+The browser may also apply file-type and size checks before upload. The backend performs its own validation.
+
+## API
+
+The web app uses these endpoints:
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/merge` | Merge PDF files |
+| `POST` | `/api/split` | Extract selected pages from a PDF |
+| `POST` | `/api/compress` | Compress a PDF |
+| `POST` | `/api/convert/pdf-to-word` | Convert PDF to DOCX |
+| `POST` | `/api/scan-to-pdf` | Create a PDF from uploaded images |
+
+## Privacy and network access
+
+By default, the server binds to `127.0.0.1`, so it accepts connections only from the same machine. Uploaded files are processed locally and temporary files are removed after processing or by scheduled cleanup. Do not change the bind address to expose this app on a network unless you have added appropriate access controls and deployment protections.
+
+## Project structure
+
+```text
+app/
+  api/        HTTP endpoints
+  core/       upload validation and temporary-file handling
+  services/   PDF and image processing
+static/       web interface and bundled browser libraries
+temp/         temporary processing files
 ```
 
-## Author
+## Troubleshooting
 
-- **reihanKhadafiB**
+- **`gs` not found:** compression will use the PyMuPDF fallback. Install Ghostscript to use Ghostscript-based compression.
+- **Upload rejected:** check the per-file, total-request, file-count, and image-dimension limits above.
+- **PDF conversion fails:** encrypted, damaged, or unusually complex PDFs may not convert successfully.
 
----
-*Aman, Cepat, Lokal.*
+## Maintainer
+
+[reihanKhadafiB](https://github.com/reihanKhadafiB)
