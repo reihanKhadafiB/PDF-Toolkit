@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, BackgroundTasks, HTTPException
 from fastapi.responses import FileResponse
+from starlette.concurrency import run_in_threadpool
 import uuid
 from app.core.validators import validate_pdf_file, validate_pdf_encryption
 from app.core.file_manager import save_upload_file, cleanup_files
@@ -16,8 +17,8 @@ async def compress_pdf_endpoint(
         unique_filename = f"{uuid.uuid4().hex}_{file.filename}"
         saved_path = await save_upload_file(file, unique_filename)
         temp_files.append(saved_path)
-        validate_pdf_encryption(saved_path)
-        compressed_file_path = compress_pdf(saved_path)
+        await run_in_threadpool(validate_pdf_encryption, saved_path)
+        compressed_file_path = await run_in_threadpool(compress_pdf, saved_path)
         temp_files.append(compressed_file_path)
         background_tasks.add_task(cleanup_files, temp_files)
         output_name = file.filename
