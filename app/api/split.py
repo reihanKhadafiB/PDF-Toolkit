@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Form, BackgroundTasks, HTTPException
 from fastapi.responses import FileResponse
+from starlette.concurrency import run_in_threadpool
 import uuid
 import json
 from app.core.validators import validate_pdf_file, validate_pdf_encryption
@@ -25,8 +26,8 @@ async def split_pdf_endpoint(
     input_path = await save_upload_file(file, unique_filename)
     temp_files = [input_path]
     try:
-        validate_pdf_encryption(input_path)
-        output_path = split_pdf(input_path, pages_list)
+        await run_in_threadpool(validate_pdf_encryption, input_path)
+        output_path = await run_in_threadpool(split_pdf, input_path, pages_list)
         temp_files.append(output_path)
         background_tasks.add_task(cleanup_files, temp_files)
         original_name = file.filename.rsplit('.', 1)[0]
