@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Form, BackgroundTasks, HTTPException
 from fastapi.responses import FileResponse
+from starlette.concurrency import run_in_threadpool
 from typing import List
 import uuid
 from app.core.validators import validate_image_file
@@ -24,7 +25,7 @@ async def scan_to_pdf_endpoint(
             saved_path = await save_upload_file(f, unique_filename)
             temp_files.append(saved_path)
             file_paths.append(saved_path)
-        scanned_file_path = images_to_pdf(file_paths)
+        scanned_file_path = await run_in_threadpool(images_to_pdf, file_paths)
         temp_files.append(scanned_file_path)
         background_tasks.add_task(cleanup_files, temp_files)
         return FileResponse(
