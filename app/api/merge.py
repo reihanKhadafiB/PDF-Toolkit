@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Form, BackgroundTasks, HTTPException
 from fastapi.responses import FileResponse
+from starlette.concurrency import run_in_threadpool
 from typing import List
 import uuid
 from app.core.validators import validate_pdf_file, validate_pdf_encryption
@@ -14,7 +15,6 @@ async def merge_pdf_endpoint(
     file_order: str = Form(...)
 ):
     temp_files = []
-    merged_file_path = None
     try:
         ordered_files = ordered_uploads(files, file_order)
         if len(ordered_files) < 2:
@@ -25,9 +25,9 @@ async def merge_pdf_endpoint(
             unique_filename = f"{uuid.uuid4().hex}_{f.filename}"
             saved_path = await save_upload_file(f, unique_filename)
             temp_files.append(saved_path)
-            validate_pdf_encryption(saved_path)
+            await run_in_threadpool(validate_pdf_encryption, saved_path)
             file_paths.append(saved_path)
-        merged_file_path = merge_pdfs(file_paths)
+        merged_file_path = await run_in_threadpool(merge_pdfs, file_paths)
         temp_files.append(merged_file_path)
         background_tasks.add_task(cleanup_files, temp_files)
         return FileResponse(
