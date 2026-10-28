@@ -1,21 +1,27 @@
 # PDF Toolkit
 
-A local web app for common PDF and document-scanning tasks. Files are processed by the backend running on your machine; the frontend libraries are bundled with the project.
+A local-first web app for PDF and document-scanning tasks. The backend runs on your computer, and the default server address is restricted to your own machine. There are no accounts or cloud processing.
 
 ## Features
 
 - **Merge PDFs** — combine files and reorder them before processing.
-- **Split PDFs** — preview pages, select the pages to keep, and download the result.
+- **PDF to Word** — convert PDF documents to DOCX, with optional local OCR for scanned pages.
+- **Word to PDF** — convert DOC and DOCX documents using LibreOffice installed on this computer.
 - **Compress PDFs** — use Ghostscript when available, with a PyMuPDF fallback.
-- **PDF to Word** — convert PDF documents to DOCX.
 - **Images to PDF** — combine PNG or JPEG images into a PDF.
-- **Document scan** — crop and enhance images in the browser, then save them as a PDF.
+- **Document scanner** — crop and enhance images in the browser, then save them as a PDF.
+- **Split PDFs** — preview pages, select pages, and download the result.
+- **Organize pages** — reorder, rotate, or remove pages.
+
+All document processing runs locally. Conversion quality depends on the source document and local tools installed.
 
 ## Requirements
 
 - Python 3.10 or later
 - `pip`
 - Ghostscript is optional and recommended for PDF compression. Without it, compression uses the PyMuPDF fallback.
+- LibreOffice is required for Word-to-PDF conversion.
+- Tesseract OCR plus the relevant language data is required for OCR. For example, install English (`eng`) or Indonesian (`ind`) data locally.
 
 ## Quick start
 
@@ -49,6 +55,8 @@ Open [http://localhost:8000](http://localhost:8000) in your browser. To stop the
 
 On Linux or macOS, you can also start the app with `./run.sh` after creating the `.venv` directory as shown above.
 
+For local OCR, install Tesseract and its English (`eng`) or Indonesian (`ind`) language data, then choose the document language in the PDF-to-Word tool. For Word-to-PDF conversion, install LibreOffice using your operating system's package manager. It is invoked locally by the backend.
+
 ## Upload limits
 
 - Maximum file size: **10 MB per file**
@@ -60,8 +68,6 @@ The browser may also apply file-type and size checks before upload. The backend 
 
 ## API
 
-The web app uses these endpoints:
-
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
 | `POST` | `/api/merge` | Merge PDF files |
@@ -69,6 +75,10 @@ The web app uses these endpoints:
 | `POST` | `/api/compress` | Compress a PDF |
 | `POST` | `/api/convert/pdf-to-word` | Convert PDF to DOCX |
 | `POST` | `/api/scan-to-pdf` | Create a PDF from uploaded images |
+| `POST` | `/api/tools/organize` | Reorder, rotate, or remove pages |
+| `POST` | `/api/tools/office-to-pdf` | Convert a Word document to PDF with LibreOffice |
+
+The interactive API schema is available at [http://localhost:8000/docs](http://localhost:8000/docs) while the app is running.
 
 ## Privacy and network access
 
@@ -82,6 +92,8 @@ app/
   core/       upload validation and temporary-file handling
   services/   PDF and image processing
 static/       web interface and bundled browser libraries
+  js/         shared browser helpers and one module per tool
+  styles/     feature and visual-theme styles
 temp/         temporary processing files
 ```
 
@@ -90,7 +102,18 @@ temp/         temporary processing files
 - **`gs` not found:** compression will use the PyMuPDF fallback. Install Ghostscript to use Ghostscript-based compression.
 - **Upload rejected:** check the per-file, total-request, file-count, and image-dimension limits above.
 - **PDF conversion fails:** encrypted, damaged, or unusually complex PDFs may not convert successfully.
+- **Word-to-PDF says LibreOffice is missing:** install LibreOffice, then restart the app.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the local-first project principles and contribution workflow.
+
+See [ROADMAP.md](ROADMAP.md) for the delivered local feature scope.
 
 ## Maintainer
 
 [reihanKhadafiB](https://github.com/reihanKhadafiB)
+
+## License
+
+PDF Toolkit is licensed under the **GNU Affero General Public License v3.0**. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for project and bundled dependency licensing details. PyMuPDF is an AGPL-3.0 runtime dependency for open-source use. If you redistribute a modified version or make it available as a network service, review the AGPL terms that apply to that use.
