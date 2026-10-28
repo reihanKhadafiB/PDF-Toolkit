@@ -1,7 +1,7 @@
 import os
 import uuid
-import fitz
-from PIL import Image, ImageFilter, ImageEnhance
+import pymupdf as fitz
+from PIL import Image, ImageFilter
 from typing import List
 from app.config import TEMP_DIR
 def images_to_pdf(image_paths: List[str]) -> str:
