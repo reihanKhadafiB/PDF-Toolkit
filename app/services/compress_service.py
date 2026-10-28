@@ -1,5 +1,5 @@
 import os
-import fitz
+import pymupdf as fitz
 import uuid
 import subprocess
 from app.config import TEMP_DIR
