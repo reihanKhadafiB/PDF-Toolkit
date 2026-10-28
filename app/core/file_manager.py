@@ -4,6 +4,7 @@ import shutil
 import time
 from fastapi import UploadFile
 from typing import List
+from starlette.concurrency import run_in_threadpool
 from app.config import TEMP_DIR, CLEANUP_MAX_AGE_HOURS
 def secure_filename(filename: str) -> str:
     if not filename:
@@ -18,12 +19,16 @@ async def save_upload_file(upload_file: UploadFile, filename: str) -> str:
     safe_filename = secure_filename(filename)
     file_path = os.path.join(TEMP_DIR, safe_filename)
     try:
-        with open(file_path, "xb") as buffer:
-            shutil.copyfileobj(upload_file.file, buffer)
+        await run_in_threadpool(_copy_upload_file, upload_file.file, file_path)
     except Exception:
         cleanup_files([file_path])
         raise
     return file_path
+
+
+def _copy_upload_file(source, destination: str) -> None:
+    with open(destination, "xb") as buffer:
+        shutil.copyfileobj(source, buffer)
 def cleanup_files(file_paths: List[str]) -> None:
     for file_path in file_paths:
         try:
