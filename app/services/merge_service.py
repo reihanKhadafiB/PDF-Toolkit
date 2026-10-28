@@ -1,6 +1,6 @@
 import os
 from typing import List
-from pypdf import PdfWriter, PdfReader
+from pypdf import PdfWriter
 from app.config import TEMP_DIR
 import uuid
 def merge_pdfs(file_paths: List[str]) -> str:
