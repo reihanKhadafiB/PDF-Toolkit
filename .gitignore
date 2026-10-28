@@ -1,20 +1,32 @@
-# Environments
+# Python environments
+.venv/
 venv/
 env/
-.env
-.venv/
 
-# Byte-compiled / optimized / DLL files
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Python cache and test output
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
-# Temporary / Output files
-# Note: temp/ directory contents are ignored via temp/.gitignore to preserve the folder structure
-*.pdf
-*.docx
+# Local processing files and generated documents
+/temp/
 
-# IDE / OS specific
+# JavaScript dependencies and build output
+node_modules/
+dist/
+build/
+
+# Editors and operating systems
 .vscode/
 .idea/
 .DS_Store
