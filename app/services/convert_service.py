@@ -1,6 +1,5 @@
 import os
 import uuid
-import os
 from pdf2docx import Converter
 from app.config import TEMP_DIR
 def convert_pdf_to_docx(pdf_path: str) -> str:
