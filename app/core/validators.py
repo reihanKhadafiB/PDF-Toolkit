@@ -2,9 +2,10 @@ from fastapi import UploadFile, HTTPException
 from pypdf import PdfReader
 from pypdf.errors import PdfReadError
 from PIL import Image, UnidentifiedImageError
+from starlette.concurrency import run_in_threadpool
 from app.config import MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB, MAX_IMAGE_PIXELS
 
-async def _validate_upload_size(file: UploadFile) -> None:
+async def validate_upload_size(file: UploadFile) -> None:
     size = 0
     while chunk := await file.read(1024 * 1024):
         size += len(chunk)
@@ -16,7 +17,7 @@ async def _validate_upload_size(file: UploadFile) -> None:
 async def validate_pdf_file(file: UploadFile) -> None:
     if not file.filename or not file.filename.lower().endswith('.pdf'):
         raise HTTPException(status_code=400, detail=f"File {file.filename} bukan merupakan file PDF.")
-    await _validate_upload_size(file)
+    await validate_upload_size(file)
     if not file.size:
         raise HTTPException(status_code=400, detail=f"File {file.filename} kosong.")
     header = await file.read(5)
@@ -28,9 +29,13 @@ async def validate_image_file(file: UploadFile) -> None:
     valid_extensions = ('.png', '.jpg', '.jpeg')
     if not file.filename or not file.filename.lower().endswith(valid_extensions):
         raise HTTPException(status_code=400, detail=f"File {file.filename} bukan merupakan gambar (PNG/JPG).")
-    await _validate_upload_size(file)
+    await validate_upload_size(file)
     if not file.size:
         raise HTTPException(status_code=400, detail=f"File {file.filename} kosong.")
+    await run_in_threadpool(_validate_image_content, file)
+
+
+def _validate_image_content(file: UploadFile) -> None:
     try:
         with Image.open(file.file) as image:
             if image.format not in {"PNG", "JPEG"}:
@@ -41,7 +46,7 @@ async def validate_image_file(file: UploadFile) -> None:
     except (UnidentifiedImageError, OSError, Image.DecompressionBombError):
         raise HTTPException(status_code=400, detail="File gambar rusak atau tidak valid.")
     finally:
-        await file.seek(0)
+        file.file.seek(0)
 def validate_pdf_encryption(file_path: str) -> None:
     try:
         reader = PdfReader(file_path)
